@@ -1,0 +1,25 @@
+[tools]
+rust = "1.100.0"
+
+[tasks.build]
+description = "Build and sign dist/QuickLaunch.app"
+run = "/bin/bash macos/build.sh"
+
+[tasks.test]
+description = "Run Rust tests and check the built Mac app"
+depends = ["build"]
+run = ["cargo test --locked", "/bin/bash tests/smoke.sh", "/bin/bash tests/publish-safety.sh"]
+
+[tasks.lint]
+description = "Check Rust format and Clippy"
+run = ["cargo fmt --check", "cargo clippy --locked --all-targets -- -D warnings"]
+
+[tasks.dmg]
+description = "Build the QuickLaunch drag-to-Applications disk image"
+depends = ["build"]
+run = "/bin/bash macos/dmg.sh"
+
+[tasks.launch]
+description = "Open QuickLaunch"
+depends = ["build"]
+run = "/usr/bin/open dist/QuickLaunch.app"
